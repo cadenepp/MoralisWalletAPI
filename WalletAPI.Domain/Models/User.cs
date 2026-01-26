@@ -2,6 +2,8 @@
 
 public class User
 {
+    public int UserId { get; set; }
+    
     public string Username { get; set; } =  string.Empty;
     
     public string Password { get; set; } =  string.Empty;
@@ -11,4 +13,6 @@ public class User
     public string? Reason { get; set; } =  string.Empty;
     
     public int Age  { get; set; } = int.MinValue;
+    
+    // TODO: add foreign key reference to a List of "saved/bookmarked" AccountBalance ID's
 }
