@@ -28,4 +28,5 @@ public class AccountBalance
     public bool VerifiedContract { get; set; }
     
     // TODO: add foreign key reference of list of TransactionHistory Entity's
+    public ICollection<TransactionHistory> TransactionHistory { get; set; } = new List<TransactionHistory>();
 }
