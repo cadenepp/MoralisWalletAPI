@@ -2,7 +2,7 @@ namespace WalletAPI.Application.Services;
 
 public class SearchFeatureService
 {
-    // call MVC API
+    // call Server receive external API data
     
-    // parse + logic -> return data
+    // parse + logic -> return data front-end
 }
