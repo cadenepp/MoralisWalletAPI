@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\WalletAPI.Domain\WalletAPI.Domain.csproj" />
       <ProjectReference Include="..\WalletAPI.Server\WalletAPI.Server.csproj" />
+      <ProjectReference Include="..\WalletAPI.Infrastructure\WalletAPI.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

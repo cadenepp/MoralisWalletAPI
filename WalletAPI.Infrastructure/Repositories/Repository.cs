@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WalletAPI.Domain.Interfaces;
 using WalletAPI.Infrastructure.Data;
 
 namespace WalletAPI.Infrastructure.Repositories;
 
-public class Repository <T> where T:class
+public class Repository<T>: IRepository<T> where T:class
 {
     
     /*   TODO:
