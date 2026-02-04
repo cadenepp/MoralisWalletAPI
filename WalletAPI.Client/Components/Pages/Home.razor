@@ -1,7 +1,160 @@
 ﻿@page "/"
+@using WalletAPI.Domain.Models
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<main class="w-auto">
+    <div class="row mx-15 container-fluid">
+        <div class="row">
+        <input class="col-md-8" @bind="_walletAddress" placeholder="Enter the Address"/>
+        <input class="col-md-3" type="number" @bind="_transQuantity" placeholder="Number of Transactions"/>
+        <button class="btn btn-primary col-md-1"> Search </button>
+        </div>
+    </div>
 
-Welcome to your new app.
+    <div class="mt-5 container-fluid">
+        <div class="row d-flex flex-column">
+        @if (_currentBalance is not null)
+        {
+            <div class="d-flex justify-content-center align-items-center ">
+                <div class="card text-dark bg-light mb-3 w-100" style="max-width: 50rem; ">
+                    <h4 class="card-header  card-title">Name: @_currentBalance.Name</h4>
+                    <div class="card-body">
+                        <p class="card-text">Token Address: @_currentBalance.TokenAddress</p>
+                        <p class="card-text">Symbol: @_currentBalance.Symbol</p>
+                        <p class="card-text">Balance: @_currentBalance.Balance</p>
+                    </div>
+                    <div class="card-footer">
+                        <button @onclick=" transOnClick" class="btn btn-primary w-100"> View Transactions</button>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center align-items-center mt-5">
+                <div class="w-100" style="max-width: 50rem;">
+                    @if (_viewTransStw & (_currentBalance.TransactionHistory.Count > 0))
+                    {
+
+                        @foreach (var transaction in _currentTransactions)
+                        {
+                            <div class="card border-secondary mb-3 ">
+                                <div class=" card-header">
+                                    <h4 class="card-title">Block Number: @transaction.BlockNumber</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">From: @transaction.From -> To: @transaction.To</p>
+                                    <p class="card-text">Amount: @transaction.Value</p>
+                                </div>
+                            </div>
+                        }
+                
+                    }
+                    else
+                    {
+                        <p class="text-center alert alert-info">Click View More Transactions</p>
+                    }
+                </div>
+                </div>
+        }
+        else
+        {
+            <p class="alert alert-info">Please look up a Wallet</p>
+        }
+        </div>
+    </div>
+
+</main>
+
+@code
+{
+    private string _walletAddress = string.Empty;
+    private string _transQuantity = string.Empty;
+    private bool _viewTransStw;
+    private List<TransactionHistory> _currentTransactions;
+
+    private TransactionHistory _exampleTransaction = new()
+    {
+        Id = 1,
+        Hash = "12kjq34kj5h345",
+        BlockNumber = 9813754934875134,
+        Timestamp = DateTime.Now,
+        From = "lkashdfj034o",
+        To = "3oi34j9ru349n",
+        Value = 435654.345m,
+        Success = true,
+        ChainId = 001
+    };
+
+    TransactionHistory[] _seedTransactionHistory =
+    [
+        new()
+        {
+            Id = 1,
+            Hash = "12kjq34kj5h345",
+            BlockNumber = 9813754934875134,
+            Timestamp = DateTime.Now,
+            From = "lkashdfj034o",
+            To = "3oi34j9ru349n",
+            Value = 435654.345m,
+            Success = true,
+            ChainId = 001
+        },
+        new()
+        {
+            Id = 2,
+            Hash = "12kjq34kj5h345",
+            BlockNumber = 9813754934875134,
+            Timestamp = DateTime.Now,
+            From = "lkashdfj034o",
+            To = "3oi34j9ru349n",
+            Value = 435654.345m,
+            Success = true,
+            ChainId = 0021
+        },
+        new()
+        {
+            Id = 1,
+            Hash = "12kjq34kj5h345",
+            BlockNumber = 9813754934875134,
+            Timestamp = DateTime.Now,
+            From = "lkashdfj034o",
+            To = "3oi34j9ru349n",
+            Value = 435654.345m,
+            Success = true,
+            ChainId = 201
+        }
+    ];
+
+
+    AccountBalance _currentBalance;
+
+    protected override void OnInitialized()
+    {
+        /*Data is being seeded for the Balance and the Transaction List*/
+        _currentBalance = new()
+        {
+            Id = 1,
+            TokenAddress = "123lk345kl345kl34j5",
+            Name = "Bitcon",
+            Symbol = "BTC",
+            Decimals = 3,
+            Balance = "125834",
+            PossibleSpam = false,
+            VerifiedContract = false,
+            TransactionHistory = new List<TransactionHistory>(_seedTransactionHistory)
+        };
+        _currentTransactions = new List<TransactionHistory>(_seedTransactionHistory);
+    }
+
+    private void transOnClick()
+    {
+        /*On the click the service will be called for the API call to get the data.*/
+        _viewTransStw = !_viewTransStw;
+    }
+
+    private void AddToBookmarked()
+    {
+        /*When ever the button for this is clicked the Balance and
+         its transactions will be added to the database table*/
+    }
+}
