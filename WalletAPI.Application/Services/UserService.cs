@@ -14,7 +14,7 @@ public class UserService
         
     }
 
-    public async Task CreateAsync(string username, string password, int UserId, int age, string email, string reason,
+    public async Task CreateAsync(string username, string password, int age, string email, string reason,
         CancellationToken cancellationToken = default)
     {
         var user = new User
@@ -29,5 +29,14 @@ public class UserService
 
         await _userRepository.SaveChangesAsync(); 
     }
+    
+    public async Task DeleteAsync( int userid, CancellationToken cancellationToken = default)
+    {
+
+        var user = await _userRepository.GetByIdAsync(userid, cancellationToken);
+        await _userRepository.AddAsync(user, cancellationToken);
+        await _userRepository.SaveChangesAsync();
+    }
+    
     // TODO: Crud Logic for Creating a User - Arun
 }
