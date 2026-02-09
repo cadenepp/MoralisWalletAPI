@@ -19,4 +19,7 @@ public interface IUserRepository <T> where T : User
         throw new NotImplementedException();
     }
     
+    Task DeleteAsync(int id, CancellationToken cancellationToken = default);
+    
+
 }

@@ -34,9 +34,14 @@ public class UserService
     {
 
         var user = await _userRepository.GetByIdAsync(userid, cancellationToken);
-        await _userRepository.AddAsync(user, cancellationToken);
         await _userRepository.SaveChangesAsync();
     }
-    
+
+    public async Task<User> GetUserByIdAsync( int userid, CancellationToken cancellationToken = default)
+    {
+        var user = await _userRepository.GetByIdAsync(userid, cancellationToken);
+        return user;
+    }
+        
     // TODO: Crud Logic for Creating a User - Arun
 }
