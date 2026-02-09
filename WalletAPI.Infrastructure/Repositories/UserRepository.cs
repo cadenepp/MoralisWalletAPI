@@ -16,7 +16,7 @@ public class UserRepository : Repository<User>, IUserRepository
 
     public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users.FindAsync(id ,cancellationToken);
         _context.Users.Remove(user);
         await _context.SaveChangesAsync(cancellationToken);
     }
