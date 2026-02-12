@@ -1,3 +1,4 @@
+using WalletAPI.Application.Services;
 using WalletAPI.Client.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// added these 2 for injecting my service in pages
+builder.Services.AddScoped<BalanceService>();
+builder.Services.AddHttpClient<BalanceService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:5081/");
+});
 
 var app = builder.Build();
 

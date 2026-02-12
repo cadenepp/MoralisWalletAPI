@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\WalletAPI.Application\WalletAPI.Application.csproj" />
       <ProjectReference Include="..\WalletAPI.Domain\WalletAPI.Domain.csproj" />
     </ItemGroup>
 

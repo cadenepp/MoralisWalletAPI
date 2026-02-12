@@ -1,0 +1,35 @@
+@page "/balances"
+@using WalletAPI.Application.DTOs
+@using WalletAPI.Application.Services
+@rendermode InteractiveServer
+@inject BalanceService balanceService
+
+
+<h3>Balances</h3>
+
+<input @bind="userInput" placeholder="search by adding address..."/>
+<button @onclick="async () => await FindAddress(userInput)">Search</button>
+
+@if (allBalances.Count >= 1)
+{
+    @foreach (var balance in allBalances)
+    {
+        <div>
+            <h1>@balance.Balance</h1>
+            <p>@balance.Token_Address</p>
+        </div>
+    }
+}
+
+@code {
+
+    private string userInput = "";
+
+    private List<BalanceDto> allBalances = new();
+
+    private async Task FindAddress(string address)
+    {
+        allBalances = await balanceService.GetBalances(address);
+    }
+    
+}
