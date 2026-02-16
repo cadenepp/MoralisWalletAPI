@@ -7,10 +7,8 @@ public class BalanceDto
     public string Name { get; set; }
 
     public string Symbol { get; set; }
-
-    public int Decimals { get; set; }
-
-    public string Balance { get; set; }
+    
+    public string Balance_Formatted { get; set; }
 
     public bool Possible_Spam { get; set; }
 

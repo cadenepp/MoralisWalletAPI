@@ -22,7 +22,7 @@ public class BalanceController : ControllerBase
     
     private record ResultsList(List<BalanceDto> result);
     
-    private record BalanceDto(string token_address, string name, string symbol, double decimals, string balance, bool possible_spam,  bool verified_contract);
+    private record BalanceDto(string token_address, string name, string symbol, string balance_formatted, bool possible_spam,  bool verified_contract);
 
     public BalanceController(IConfiguration config)
     {
