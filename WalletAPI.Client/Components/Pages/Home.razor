@@ -1,65 +1,66 @@
 ﻿@page "/"
+@using System.ComponentModel
+@using WalletAPI.Application.ServiceInterfaces
 @using WalletAPI.Domain.Models
 @rendermode InteractiveServer
+@inject ISearchFeatureService SFS
 
 <PageTitle>Home</PageTitle>
 
 <main class="w-auto">
     <div class="row mx-15 container-fluid">
         <div class="row">
-        <input class="col-md-8" @bind="_walletAddress" placeholder="Enter the Address"/>
-        <input class="col-md-3" type="number" @bind="_transQuantity" placeholder="Number of Transactions"/>
-        <button class="btn btn-primary col-md-1"> Search </button>
+            <input class="col-md-8" @bind="_walletAddress" placeholder="Enter the Address"/>
+            <input class="col-md-3" type="number" @bind="_transQuantity" placeholder="Number of Transactions"/>
+            <button class="btn btn-primary col-md-1" @onclick=" SearchAddress "> Search</button>
         </div>
     </div>
 
     <div class="mt-5 container-fluid">
         <div class="row d-flex flex-column">
-        @if (_currentBalance is not null)
-        {
-            <div class="d-flex justify-content-center align-items-center ">
-                <div class="card text-dark bg-light mb-3 w-100" style="max-width: 50rem; ">
-                    <h4 class="card-header  card-title">Name: @_currentBalance.Name</h4>
-                    <div class="card-body">
-                        <p class="card-text">Token Address: @_currentBalance.TokenAddress</p>
-                        <p class="card-text">Symbol: @_currentBalance.Symbol</p>
-                        <p class="card-text">Balance: @_currentBalance.Balance</p>
-                    </div>
-                    <div class="card-footer">
-                        <button @onclick=" transOnClick" class="btn btn-primary w-100"> View Transactions</button>
+            @if (_currentBalance is not null)
+            {
+                <div class="d-flex justify-content-center align-items-center ">
+                    <div class="card text-dark bg-light mb-3 w-100" style="max-width: 50rem; ">
+                        <h4 class="card-header  card-title">Name: @_currentBalance.Name</h4>
+                        <div class="card-body">
+                            <p class="card-text">Token Address: @_currentBalance.TokenAddress</p>
+                            <p class="card-text">Symbol: @_currentBalance.Symbol</p>
+                            <p class="card-text">Balance: @_currentBalance.Balance</p>
+                        </div>
+                        <div class="card-footer">
+                            <button @onclick=" transOnClick" class="btn btn-primary w-100"> View Transactions</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="d-flex justify-content-center align-items-center mt-5">
-                <div class="w-100" style="max-width: 50rem;">
-                    @if (_viewTransStw & (_currentBalance.TransactionHistory.Count > 0))
-                    {
-
-                        @foreach (var transaction in _currentTransactions)
+                <div class="d-flex justify-content-center align-items-center mt-5">
+                    <div class="w-100" style="max-width: 50rem;">
+                        @if (_viewTransStw & (_currentBalance.TransactionHistory.Count > 0))
                         {
-                            <div class="card border-secondary mb-3 ">
-                                <div class=" card-header">
-                                    <h4 class="card-title">Block Number: @transaction.BlockNumber</h4>
+                            @foreach (var transaction in _currentTransactions)
+                            {
+                                <div class="card border-secondary mb-3 ">
+                                    <div class=" card-header">
+                                        <h4 class="card-title">Block Number: @transaction.BlockNumber</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">From: @transaction.From -> To: @transaction.To</p>
+                                        <p class="card-text">Amount: @transaction.Value</p>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <p class="card-text">From: @transaction.From -> To: @transaction.To</p>
-                                    <p class="card-text">Amount: @transaction.Value</p>
-                                </div>
-                            </div>
+                            }
                         }
-                
-                    }
-                    else
-                    {
-                        <p class="text-center alert alert-info">Click View More Transactions</p>
-                    }
+                        else
+                        {
+                            <p class="text-center alert alert-info">Click View More Transactions</p>
+                        }
+                    </div>
                 </div>
-                </div>
-        }
-        else
-        {
-            <p class="alert alert-info">Please look up a Wallet</p>
-        }
+            }
+            else
+            {
+                <p class="alert alert-info">Please look up a Wallet</p>
+            }
         </div>
     </div>
 
@@ -69,8 +70,12 @@
 {
     private string _walletAddress = string.Empty;
     private string _transQuantity = string.Empty;
+
+    private record ErrorMessage(string Field, string Message);
+    private ErrorMessage inputerror; 
+    
     private bool _viewTransStw;
-    private List<TransactionHistory> _currentTransactions;
+    private List<TransactionHistory> _currentTransactions = new List<TransactionHistory>();
 
     private TransactionHistory _exampleTransaction = new()
     {
@@ -85,7 +90,7 @@
         ChainId = 001
     };
 
-    TransactionHistory[] _seedTransactionHistory =
+     readonly TransactionHistory[] _seedTransactionHistory =
     [
         new()
         {
@@ -126,7 +131,7 @@
     ];
 
 
-    AccountBalance _currentBalance;
+    AccountBalance _currentBalance = new AccountBalance();
 
     protected override void OnInitialized()
     {
@@ -156,5 +161,38 @@
     {
         /*When ever the button for this is clicked the Balance and
          its transactions will be added to the database table*/
+    }
+
+    private async Task SearchAddress()
+    {
+        if (!int.TryParse(_transQuantity, out var limit))
+        {
+            inputerror = new ErrorMessage("transQuantity", "Please enter a valid quantity");
+        }
+        if(        _walletAddress != string.Empty
+          )
+        {
+            inputerror = new ErrorMessage("address", "Please enter a valid address");
+        }
+        
+        Console.WriteLine("In the Search Address Method");
+
+        /* Search for the address in the API*/
+        var response = await SFS.GetNativeTransactionsAsync(_walletAddress, limit);
+        
+
+        response.ForEach(t =>
+        {
+            _currentTransactions.Add(new TransactionHistory()
+            {
+                BlockNumber = long.Parse(t.block_number),
+                ChainId = 0001,
+                From = t.from_address,
+                Success = true,
+                To = t.to_address,
+                Value = decimal.Parse(t.value),
+            });
+        });   
+
     }
 }

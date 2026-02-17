@@ -1,14 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
-    </PropertyGroup>
+      <UserSecretsId>b52125db-83c0-4c19-a7c7-5ccee14e15d3</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\WalletAPI.Application\WalletAPI.Application.csproj" />
       <ProjectReference Include="..\WalletAPI.Domain\WalletAPI.Domain.csproj" />
+      <ProjectReference Include="..\WalletAPI.Infrastructure\WalletAPI.Infrastructure.csproj" />
+      <ProjectReference Include="..\WalletAPI.Server\WalletAPI.Server.csproj" />
     </ItemGroup>
 
 </Project>

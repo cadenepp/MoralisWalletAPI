@@ -1,6 +1,16 @@
+using WalletAPI.Application.ServiceInterfaces;
+using WalletAPI.Application.Services;
 using WalletAPI.Client.Components;
+using WalletAPI.Domain.Interfaces;
+using WalletAPI.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddHttpClient<ISearchFeatureService, SearchFeatureService>();
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
