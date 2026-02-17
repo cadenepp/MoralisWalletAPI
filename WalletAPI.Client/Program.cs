@@ -1,8 +1,16 @@
+using WalletAPI.Application.ServiceInterfaces;
 using WalletAPI.Application.Services;
 using WalletAPI.Client.Components;
+using WalletAPI.Domain.Interfaces;
 using WalletAPI.Infrastructure;
+using WalletAPI.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+
+
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -14,6 +22,9 @@ builder.Services.AddHttpClient<BalanceService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:5081/");
 });
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddHttpClient<ISearchFeatureService, SearchFeatureService>();
 
 builder.Services.AddInfrastructure(
     dbConn: "Data Source=walletapi.db"

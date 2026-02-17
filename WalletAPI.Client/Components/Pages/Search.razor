@@ -1,8 +1,11 @@
 @page "/search"
 @using WalletAPI.Application.DTOs
+@using WalletAPI.Application.ServiceInterfaces
 @using WalletAPI.Application.Services
+@using WalletAPI.Domain.Models
 @rendermode InteractiveServer
 @inject BalanceService balanceService
+@inject ISearchFeatureService SFS
 
 
 <h3>Search for any Wallet on the ETH Network</h3>
@@ -24,7 +27,10 @@
             {
                 <div class="d-flex justify-content-center align-items-center ">
                     <div class="card text-dark bg-light mb-3 w-100" style="max-width: 50rem; ">
-                        <h4 class="card-header card-title">Name: @_firstBalance.Name</h4>
+                        <div class="card-header  d-flex flex-row justify-content-between">
+                            <h4 class="card-title">Name: @_firstBalance.Name</h4>
+                            <button @onclick="BookMarkItem" class="bg-primary rounded-1 border-0">⭐</button>
+                            </div>
                         <div class="card-body">
                             <p class="card-text">Token Address: @_firstBalance.Token_Address</p>
                             <p class="card-text">Token Symbol: @_firstBalance.Symbol</p>
@@ -35,11 +41,7 @@
                         <div class="card-footer">
                             @if (_allBalances.Count > 1)
                             {
-                                <button @onclick="MoreBalOnClick" class="btn btn-primary w-100">View More Balances</button>
-                            }
-                            @if (_allTransactions.Count >= 1)
-                            {
-                                <button @onclick="TransOnClick" class="btn btn-primary w-100">View Transactions</button>
+                                <button @onclick="MoreBalOnClick" class="btn btn-primary w-100">View More</button>
                             }
                         </div>
                     </div>
@@ -81,14 +83,14 @@
                     </div>
 
                     <div class="w-25" style="max-width: 50rem;">
-                        @if (_viewTransStw && _allTransactions.Count > 1)
+                        @if (_viewTransStw && _currentTransactions.Count > 1)
                         {
                             <h2 class="mb-2">More Transactions: </h2>
-                            @foreach (var transaction in _allTransactions)
+                            @foreach (var transaction in _currentTransactions)
                             {
                                 <div class="card border-secondary mb-3">
                                     <div class="card-header">
-                                        <h4 class="card-title">Block Number: @transaction.Block_Number</h4>
+                                        <h4 class="card-title">Block Number: @transaction.BlockNumber</h4>
                                     </div>
                                     <div class="card-body">
                                         <p class="card-text">From: @transaction.From -> To: @transaction.To</p>
@@ -100,7 +102,7 @@
                         }
                         else
                         {
-                            if (_allTransactions.Count >= 1)
+                            if (_currentTransactions.Count >= 1)
                             {
                                 <p class="text-center alert alert-info">Click View More Transactions</p>
                             }
@@ -144,6 +146,11 @@
     private bool _viewBalStw;
     private bool _viewTransStw;
     
+    private record ErrorMessage(string Field, string Message);
+    private ErrorMessage inputerror; 
+    
+    private List<TransactionHistory> _currentTransactions = new ();
+    
     private bool _error;
 
     // TODO: add number of transactions to method parameter
@@ -168,6 +175,36 @@
                 Possible_Spam = _allBalances[0].Possible_Spam
             };
         }
+        
+        if (!int.TryParse(_transQuantity, out var limit))
+        {
+            inputerror = new ErrorMessage("transQuantity", "Please enter a valid quantity");
+        }
+        if(        _walletAddress != string.Empty
+          )
+        {
+            inputerror = new ErrorMessage("address", "Please enter a valid address");
+        }
+        
+        Console.WriteLine("In the Search Address Method");
+
+        /* Search for the address in the API*/
+        var response = await SFS.GetNativeTransactionsAsync(_walletAddress, limit);
+        
+
+        response.ForEach(t =>
+        {
+            _currentTransactions.Add(new TransactionHistory()
+            {
+                BlockNumber = long.Parse(t.block_number),
+                ChainId = 0001,
+                From = t.from_address,
+                Success = true,
+                To = t.to_address,
+                Value = decimal.Parse(t.value),
+            });
+        });   
+
     }
 
     private string YesOrNo(bool value)
@@ -179,6 +216,7 @@
     {
         // TODO: On click return all balances except first index
         _viewBalStw = !_viewBalStw;
+        TransOnClick();
     }
 
     private void TransOnClick() => _viewTransStw = !_viewTransStw;
@@ -188,5 +226,8 @@
         // TODO: When ever the button for this is clicked the Balance an its transactions will be added to the database table
     }
 
+    private async Task BookMarkItem() {
+        
+    }
     
 }
