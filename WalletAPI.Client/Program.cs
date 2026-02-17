@@ -1,5 +1,6 @@
 using WalletAPI.Application.Services;
 using WalletAPI.Client.Components;
+using WalletAPI.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,10 @@ builder.Services.AddHttpClient<BalanceService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:5081/");
 });
+
+builder.Services.AddInfrastructure(
+    dbConn: "Data Source=walletapi.db"
+);
 
 var app = builder.Build();
 
