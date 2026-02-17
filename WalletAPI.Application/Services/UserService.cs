@@ -1,20 +1,23 @@
 using WalletAPI.Domain.Interfaces;
 using WalletAPI.Domain.Models;
+using WalletAPI.Infrastructure.Data;
+using WalletAPI.Infrastructure.Repositories;
 
 namespace WalletAPI.Application.Services;
 
-public class CreateUserService
+public class UserService
 {
-    private readonly IUserRepository<User> _userRepository;
-    public CreateUserService(IUserRepository<User> userRepository)
+    private readonly IUserRepository _userRepository;
+    public UserService(IUserRepository userRepository)
     {
-        _userRepository = userRepository;
+         _userRepository = userRepository;
         
     }
+
     public async Task CreateAsync(string username, string password, int age, string email, string reason,
         CancellationToken cancellationToken = default)
     {
-        var userService = new User
+        var user = new User
         {
             Username = username,
             Password = password,
@@ -22,21 +25,22 @@ public class CreateUserService
             Email = email,
             Reason = reason,
         };
-        await _userRepository.AddAsync(userService,cancellationToken);
+        await _userRepository.AddAsync(user, cancellationToken);
 
         await _userRepository.SaveChangesAsync(); 
     }
+    
     public async Task DeleteAsync( int userid, CancellationToken cancellationToken = default)
     {
 
-        var userServices  = await _userRepository.GetByIdAsync(userid, cancellationToken);
+        var user = await _userRepository.GetByIdAsync(userid, cancellationToken);
         await _userRepository.SaveChangesAsync();
     }
 
-    public async Task<object> GetUserByIdAsync( int userid, CancellationToken cancellationToken = default)
+    public async Task<User> GetUserByIdAsync( int userid, CancellationToken cancellationToken = default)
     {
-        var userService = await _userRepository.GetByIdAsync(userid, cancellationToken);
-        return userService;
+        var user = await _userRepository.GetByIdAsync(userid, cancellationToken);
+        return user;
     }
         
     // TODO: Crud Logic for Creating a User - Arun
