@@ -27,6 +27,8 @@ public class AccountBalance
     // Indicates whether the token contract is verified on a block explorer
     public bool VerifiedContract { get; set; }
     
-    // TODO: add foreign key reference of list of TransactionHistory Entity's
-    public ICollection<TransactionHistory> TransactionHistory { get; set; } = new List<TransactionHistory>();
+    // FK to User
+    public int UserId { get; set; }
+    public User User { get; set; } = null!;
+    
 }

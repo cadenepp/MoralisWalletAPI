@@ -1,14 +1,12 @@
 using WalletAPI.Domain.Interfaces;
 using WalletAPI.Domain.Models;
-using WalletAPI.Infrastructure.Data;
-using WalletAPI.Infrastructure.Repositories;
 
 namespace WalletAPI.Application.Services;
 
 public class UserService
 {
-    private readonly IUserRepository _userRepository;
-    public UserService(IUserRepository userRepository)
+    private readonly IRepository<User> _userRepository;
+    public UserService(IRepository<User> userRepository)
     {
          _userRepository = userRepository;
         
@@ -32,8 +30,8 @@ public class UserService
     
     public async Task DeleteAsync( int userid, CancellationToken cancellationToken = default)
     {
-
         var user = await _userRepository.GetByIdAsync(userid, cancellationToken);
+        await _userRepository.DeleteAsync(user, cancellationToken);
         await _userRepository.SaveChangesAsync();
     }
 
@@ -42,6 +40,5 @@ public class UserService
         var user = await _userRepository.GetByIdAsync(userid, cancellationToken);
         return user;
     }
-        
-    // TODO: Crud Logic for Creating a User - Arun
+    
 }

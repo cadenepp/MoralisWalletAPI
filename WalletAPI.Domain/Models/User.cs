@@ -14,6 +14,7 @@ public class User
     
     public int Age  { get; set; } = int.MinValue;
     
-    // TODO: add foreign key reference to a List of "saved/bookmarked" AccountBalance ID's
     public ICollection<AccountBalance> AccountBalances { get; set; } = new List<AccountBalance> ();
+    
+    public ICollection<TransactionHistory> TransactionHistory { get; set; } = new List<TransactionHistory>();
 }

@@ -29,4 +29,8 @@ public class TransactionHistory
     // EVM chain identifier (e.g., 1 = Ethereum, 137 = Polygon, 56 = BNB Chain)
     // Used to distinguish transactions across different blockchain networks
     public int ChainId { get; set; }
+    
+    // FK to User
+    public int UserId { get; set; }
+    public User User { get; set; } = null!;
 }

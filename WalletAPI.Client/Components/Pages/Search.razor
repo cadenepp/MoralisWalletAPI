@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    @* TODO: add favorite button depending on login status *@
+    @* TODO: configure favorite button depending on login status *@
     <div class="mt-5 container-fluid">
         <div class="row d-flex flex-column">
             @if (!_error && _firstBalance is not null)
@@ -41,7 +41,11 @@
                         <div class="card-footer">
                             @if (_allBalances.Count > 1)
                             {
-                                <button @onclick="MoreBalOnClick" class="btn btn-primary w-100">View More</button>
+                                <button @onclick="MoreBalOnClick" class="btn btn-primary w-100 mb-3">View More Balances</button>
+                            }
+                            @if (_currentTransactions.Count > 1)
+                            {
+                                <button @onclick="TransOnClick" class="btn btn-primary w-100">View More Transactions</button>
                             }
                         </div>
                     </div>
@@ -135,9 +139,10 @@
 
 
 @code {
+    // TODO: persist Balances and Transactions if favorite button is pressed
 
     private List<BalanceDto> _allBalances = new();
-    private List<TransactionDto> _allTransactions = new();
+    private List<TransactionHistory> _currentTransactions = new();
     private BalanceDto _firstBalance;
     
     private string _walletAddress = string.Empty;
@@ -147,16 +152,22 @@
     private bool _viewTransStw;
     
     private record ErrorMessage(string Field, string Message);
-    private ErrorMessage inputerror; 
-    
-    private List<TransactionHistory> _currentTransactions = new ();
-    
+    private ErrorMessage inputerror;
     private bool _error;
-
-    // TODO: add number of transactions to method parameter
-    // TODO: call service for transactions on address then save to allTransactions List, if error change to _error to true
+    
     private async Task SearchAddress(string address)
     {
+        // form validation
+        if(_walletAddress != string.Empty)
+        {
+            inputerror = new ErrorMessage("address", "Please enter a valid address");
+        }
+        if (!int.TryParse(_transQuantity, out var limit))
+        {
+            inputerror = new ErrorMessage("transQuantity", "Please enter a valid quantity");
+        }
+        
+        
         _allBalances = await balanceService.GetBalances(address);
         if (_allBalances is null)
         {
@@ -174,16 +185,6 @@
                 Verified_Contract = _allBalances[0].Verified_Contract,
                 Possible_Spam = _allBalances[0].Possible_Spam
             };
-        }
-        
-        if (!int.TryParse(_transQuantity, out var limit))
-        {
-            inputerror = new ErrorMessage("transQuantity", "Please enter a valid quantity");
-        }
-        if(        _walletAddress != string.Empty
-          )
-        {
-            inputerror = new ErrorMessage("address", "Please enter a valid address");
         }
         
         Console.WriteLine("In the Search Address Method");
@@ -216,7 +217,6 @@
     {
         // TODO: On click return all balances except first index
         _viewBalStw = !_viewBalStw;
-        TransOnClick();
     }
 
     private void TransOnClick() => _viewTransStw = !_viewTransStw;
