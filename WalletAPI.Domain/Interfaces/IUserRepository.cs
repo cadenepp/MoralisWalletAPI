@@ -2,7 +2,7 @@ using WalletAPI.Domain.Models;
 
 namespace WalletAPI.Domain.Interfaces;
 
-public interface UserRepository 
+public interface IUserRepository <T> where T : User
 {
     public async Task AddAsync(User user, CancellationToken cancellationToken)
     {

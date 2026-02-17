@@ -1,11 +1,12 @@
 using WalletAPI.Domain.Interfaces;
 using WalletAPI.Domain.Models;
+
 namespace WalletAPI.Application.Services;
 
 public class CreateUserService
 {
-    private readonly UserRepository _userRepository;
-    public CreateUserService(UserRepository userRepository)
+    private readonly IUserRepository<User> _userRepository;
+    public CreateUserService(IUserRepository<User> userRepository)
     {
         _userRepository = userRepository;
         
@@ -13,7 +14,7 @@ public class CreateUserService
     public async Task CreateAsync(string username, string password, int age, string email, string reason,
         CancellationToken cancellationToken = default)
     {
-        var user = new User
+        var userService = new User
         {
             Username = username,
             Password = password,
@@ -21,11 +22,10 @@ public class CreateUserService
             Email = email,
             Reason = reason,
         };
-        await _userRepository.AddAsync(user, cancellationToken);
+        await _userRepository.AddAsync(userService,cancellationToken);
 
         await _userRepository.SaveChangesAsync(); 
     }
-    
     public async Task DeleteAsync( int userid, CancellationToken cancellationToken = default)
     {
 
@@ -35,8 +35,8 @@ public class CreateUserService
 
     public async Task<object> GetUserByIdAsync( int userid, CancellationToken cancellationToken = default)
     {
-        var user = await _userRepository.GetByIdAsync(userid, cancellationToken);
-        return user;
+        var userService = await _userRepository.GetByIdAsync(userid, cancellationToken);
+        return userService;
     }
         
     // TODO: Crud Logic for Creating a User - Arun
