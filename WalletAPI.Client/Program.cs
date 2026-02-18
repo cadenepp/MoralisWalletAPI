@@ -25,6 +25,7 @@ builder.Services.AddHttpClient<BalanceService>(client =>
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddHttpClient<ISearchFeatureService, SearchFeatureService>();
+builder.Services.AddHttpClient<IBookedMarkedService, BookmarkService>();
 
 builder.Services.AddInfrastructure(
     dbConn: "Data Source=walletapi.db"

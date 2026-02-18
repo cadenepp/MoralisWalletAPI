@@ -2,7 +2,7 @@
 
 namespace WalletAPI.Domain.Interfaces;
 
-public interface IBookMarkedRepository <T> where T : User
+public interface IBookMarkedRepository : IRepository<BookMarked>
 {
     
 }

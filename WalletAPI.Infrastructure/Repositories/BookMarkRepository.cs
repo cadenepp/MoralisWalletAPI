@@ -1,6 +1,10 @@
-﻿namespace WalletAPI.Infrastructure.Repositories;
+﻿using WalletAPI.Domain.Interfaces;
+using WalletAPI.Domain.Models;
+using WalletAPI.Infrastructure.Data;
 
-public class BookMarkRepository
+namespace WalletAPI.Infrastructure.Repositories;
+
+public class BookMarkRepository : Repository<BookMarked>, IBookMarkedRepository
 {
-    
+    public BookMarkRepository(WalletDbContext db) : base(db){}
 }
