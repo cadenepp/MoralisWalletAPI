@@ -1,0 +1,57 @@
+using WalletAPI.Auth.Data;
+using OpenIddict.Abstractions;
+using static OpenIddict.Abstractions.OpenIddictConstants;
+
+namespace WalletAPI.Auth;
+
+public class Worker : IHostedService
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public Worker(IServiceProvider serviceProvider)
+        => _serviceProvider = serviceProvider;
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await using var scope = _serviceProvider.CreateAsyncScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await context.Database.EnsureCreatedAsync();
+
+        var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
+
+        if (await manager.FindByClientIdAsync("service-worker") is null)
+        {
+            await manager.CreateAsync(new OpenIddictApplicationDescriptor
+            {
+                ClientId = "service-worker",
+                ClientSecret = "388D45FA-B36B-4988-BA59-B187D329C207",
+                ConsentType = ConsentTypes.Explicit,
+                DisplayName = "WalletAPI Client Application",
+                ClientType = ClientTypes.Confidential,
+                PostLogoutRedirectUris =
+                {
+                    new Uri("https://localhost:44310/authentication/logout-callback")
+                },
+                RedirectUris =
+                {
+                    new Uri("https://localhost:44310/authentication/login-callback")
+                },
+                Permissions =
+                {
+                    Permissions.Endpoints.Authorization,
+                    Permissions.Endpoints.EndSession,
+                    Permissions.Endpoints.Token,
+                    Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.GrantTypes.RefreshToken,
+                    Permissions.ResponseTypes.Code,
+                    Permissions.Scopes.Email,
+                    Permissions.Scopes.Profile,
+                    Permissions.Scopes.Roles
+                }
+            });
+        }
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+}
