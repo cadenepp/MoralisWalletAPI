@@ -20,15 +20,14 @@ public class Worker : IHostedService
 
         var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
 
-        if (await manager.FindByClientIdAsync("service-worker") is null)
+        if (await manager.FindByClientIdAsync("wallet-api") is null)
         {
             await manager.CreateAsync(new OpenIddictApplicationDescriptor
             {
-                ClientId = "service-worker",
-                ClientSecret = "388D45FA-B36B-4988-BA59-B187D329C207",
+                ClientId = "wallet-api",
                 ConsentType = ConsentTypes.Explicit,
                 DisplayName = "WalletAPI Client Application",
-                ClientType = ClientTypes.Confidential,
+                ClientType = ClientTypes.Public,
                 PostLogoutRedirectUris =
                 {
                     new Uri("https://localhost:44310/authentication/logout-callback")
